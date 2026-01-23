@@ -1,8 +1,19 @@
 // App.js
-import React, { useEffect, useState } from "react";
-import heroImg from "./assets/parcel-dos-reis.jpg";
+import React, { useEffect, useMemo, useState } from "react";
 import logoOPC from "./assets/logo.png";
 import { useBff } from "./hooks/useBff";
+
+import parcelDosReisImg from "./assets/parcel-dos-reis.jpg";
+import parcelDoBandolimImg from "./assets/parcel-do-bandolim.jpg";
+import parcelDosMeroslimImg from "./assets/parcel-dos-meros.jpg";
+import parcelDasParedesImg from "./assets/parcel-das-paredes.webp";
+import parcelDasTimbebasImg from "./assets/parcel-das-timbebas.jpg";
+import rochedoSaoPauloImg from "./assets/rochedo-de-sao-paulo.jpg";
+import rochedoSaoPedroImg from "./assets/rochedo-de-sao-pedro.jpg";
+import parcelDasfeiticeirasImg from "./assets/parcel-das-feiticeiras.jpeg";
+
+import fallbackHeroImg from "./assets/hero-fallback.jpg";
+
 
 function IconHome(props) {
   return (
@@ -193,7 +204,7 @@ export default function App() {
         <div className="brand">
 
           <img className="brandLogo" src={logoOPC} alt="OceanPact" />
-          <div className="brandText">OceanPact</div>
+          <div className="brandText">Hub Financeiro</div>
         </div>
 
         <nav className="menu">
@@ -218,80 +229,28 @@ export default function App() {
 
       <main className="main">
 
-        <section className="hero" style={{ "--hero-img": `url(${heroImg})` }}>
-          <div className="heroOverlay" />
-          <div className="heroContent">
+        <HeroRotativo pinned={pinned} setPinned={setPinned} />
 
-          <div className="tabsTop">
-            <div className="tabs">
-              <button className="tab active">Visão Geral</button>
-              <button className="tab">Obras Futuras</button>
-              <button className="tab">Obras em Andamento</button>
-              <button className="tab">Obras Finalizadas</button>
-            </div>
-            <button
-              type="button"
-              className={`btnIcon ${pinned ? "isPinned" : ""}`}
-              aria-label={pinned ? "Desafixar" : "Fixar"}
-              aria-pressed={pinned}
-              onClick={() => setPinned(v => !v)}
-            >
-              📌
-            </button>
-            
-          </div>
-          
-            <Badge>ID 160</Badge>
-            <h1 className="heroTitle">A Mobilização do Parcel dos Reis termina no dia 12 de janeiro.</h1>
-            <p className="heroSub">Acesse a parada 160 e verifique suas pendências.</p>
-
-            <div className="heroBottom">
-              <div/>
-
-              <div className="stats">
-                <div className="statCard">
-                  <div className="statTitle">Capex</div>
-                  <div className="statLine">Estimado:</div>
-                  <div className="statLine">Comprometido:</div>
-                  <div className="statLine">Realizado:</div>
-                </div>
-                <div className="statCard">
-                  <div className="statTitle">Esteira Financeira</div>
-                  <div className="statLine">Com pendência:</div>
-                  <div className="statLine">Materiais em atraso:</div>
-                  <div className="statLine">Falha de conciliação:</div>
-                </div>
-                <div className="statCard">
-                  <div className="statTitle">Não Conformidade</div>
-                  <div className="statLine">NC Críticas em aberto:</div>
-                  <div className="statLine">NC em tratamento:</div>
-                  <div className="statLine">NC atentidas no período:</div>
-                </div>
-                <div className="statCard">
-                  <div className="statTitle">GMUDs</div>
-                  <div className="statLine">Em rascunho:</div>
-                  <div className="statLine">Em aprovação:</div>
-                  <div className="statLine">Impácto estimado total:</div>
-                </div>
-
-                <button className="btnPrimary">Acessar Parada <span aria-hidden="true">→</span></button>
-
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
 
       <aside className="right">
 
         <div className="rightHeader">
-          <div className="rightTitle">Atualizações</div>
-          <a className="rightLink" href="#">Ver Todas</a>
+          <div className="rightTitle"> Atualizações </div>
+          
+          <button 
+            type="button" 
+            className={`rTab ${updatesTab === "todas" ? "active" : ""}`}
+            onClick={() => setUpdatesTab("todas")}
+          >Ver Todas</button>
+        
         </div>
 
         <div className="rightTabs">
-          <button type="buttom" className={`rTab ${updatesTab === "geral" ? "active" : ""}`}
-          onClick={() => setUpdatesTab("geral")}
+          <button 
+            type="button" 
+            className={`rTab ${updatesTab === "geral" ? "active" : ""}`}
+            onClick={() => setUpdatesTab("geral")}
           >Geral</button>
           
           
@@ -302,9 +261,8 @@ export default function App() {
           >Para Mim</button>
         </div>
 
-        <UpdateList tab={updatesTab === "geral" ? "geral" : "minhas"} />
+        <UpdateList tab={updatesTab}/>
 
-        
       </aside>
 
       <button className="fab" aria-label="Ação rápida">
@@ -318,23 +276,39 @@ export default function App() {
 
 
 function UpdateList({ tab }) {
-  
-  //chama o verificador de erro antes de imprimir
-  const { data, loading, err } = useBff(
-    `/bff/updates?tab=${encodeURIComponent(tab)}`,
-    [tab]
-  );
+  const { data, loading, err } = useBff("/bff/updates", []); // sem query agora
 
   if (loading) return <div className="updates">Carregando...</div>;
   if (err) return <div className="updates">Erro: {err}</div>;
 
+  const groups = data?.groups || [];
+
+  const filtered =
+    tab.toLowerCase() === "todas"
+      ? groups
+      : tab.toLowerCase() === "minhas"
+      ? groups.filter((g) => (g.dateLabel || "").toLowerCase() === "para mim")
+      : groups.filter((g) => (g.dateLabel || "").toLowerCase() !== "para mim");
+
+  if (filtered.length === 0) {
+    return <div className="updates">Sem atualizações.</div>;
+  }
+
   return (
     <div className="updates">
-      {(data?.groups || []).map((g, idx) => (
+      {filtered.map((g, idx) => (
         <div key={`${g.dateLabel}-${idx}`}>
           <div className="date">{g.dateLabel}</div>
+
           {(g.items || []).map((it, j) => (
-            <UpdateCard key={`${it.title}-${it.time}-${j}`} {...it} />
+            <UpdateCard
+              key={`${it.title}-${it.time}-${j}`}
+              title={it.title}
+              meta={it.meta}
+              text={it.text}
+              user={it.user}
+              time={it.time}
+            />
           ))}
         </div>
       ))}
@@ -343,5 +317,175 @@ function UpdateList({ tab }) {
 }
 
 
+const HERO_IMAGES = {
+  "parcel-dos-reis": parcelDosReisImg,
+  "parcel-do-bandolim": parcelDoBandolimImg,
+  "parcel-dos-meros": parcelDosMeroslimImg,
+  "parcel-das-paredes": parcelDasParedesImg,
+  "parcel-das-timbebas": parcelDasTimbebasImg,
+  "rochedo-de-sao-paulo": rochedoSaoPauloImg,
+  "rochedo-sao-pedro": rochedoSaoPedroImg,
+  "parcel-das-feiticeiras": parcelDasfeiticeirasImg
+};
 
 
+function HeroRotativo({ pinned, setPinned }) {
+  const { data, loading, err } = useBff("/bff/paradas", { items: [] });
+
+  const [heroTab, setHeroTab] = useState("Visão Geral");
+  const [idx, setIdx] = useState(0);
+
+  const items = data?.items || [];
+
+  const elegiveis = useMemo(() => {
+    if (heroTab === "Obras Futuras") {
+      return items.filter((p) => p.statusParada === "Backlog");
+    }
+    if (heroTab === "Obras em Andamento") {
+      return items.filter((p) => p.statusParada === "Execucao");
+    }
+    if (heroTab === "Obras Finalizadas") {
+      return items.filter((p) => p.statusParada === "Concluida");
+    }
+    return items.filter((p) => p.statusParada !== "Concluida");
+  }, [items, heroTab]);
+
+  useEffect(() => {
+    setIdx(0);
+  }, [elegiveis.length, heroTab]);
+
+  const total = elegiveis.length;
+
+  useEffect(() => {
+    if (pinned) return;
+    if (total <= 1) return;
+
+    const id = setInterval(() => {
+      setIdx((v) => (v + 1) % total);
+    }, 5000);
+
+    return () => clearInterval(id);
+  }, [pinned, total]);
+
+  useEffect(() => {
+    if (total === 0) return;
+    setIdx((v) => (v >= total ? 0 : v));
+  }, [total, heroTab]);
+
+  if (loading || err || elegiveis.length === 0) return null;
+
+  const parada = elegiveis[idx];
+  const heroImg = HERO_IMAGES[parada.heroImageKey] || fallbackHeroImg;
+
+  const disableNav = total <= 1;
+
+  const onPrevParada = () => {
+    if (disableNav) return;
+    setPinned(true); // opcional
+    setIdx((v) => (v - 1 + total) % total);
+  };
+
+  const onNextParada = () => {
+    if (disableNav) return;
+    setPinned(true); // opcional
+    setIdx((v) => (v + 1) % total);
+  };
+
+  return (
+    <section className="hero" style={{ "--hero-img": `url(${heroImg})` }}>
+      <div className="heroOverlay" />
+      <div className="heroContent">
+        <div className="tabsTop">
+          <div className="tabs">
+            <button
+              type="button"
+              className={`tab ${heroTab === "Visão Geral" ? "active" : ""}`}
+              onClick={() => setHeroTab("Visão Geral")}
+            >
+              Visão Geral
+            </button>
+
+            <button
+              type="button"
+              className={`tab ${heroTab === "Obras Futuras" ? "active" : ""}`}
+              onClick={() => setHeroTab("Obras Futuras")}
+            >
+              Obras Futuras
+            </button>
+
+            <button
+              type="button"
+              className={`tab ${heroTab === "Obras em Andamento" ? "active" : ""}`}
+              onClick={() => setHeroTab("Obras em Andamento")}
+            >
+              Obras em Andamento
+            </button>
+
+            <button
+              type="button"
+              className={`tab ${heroTab === "Obras Finalizadas" ? "active" : ""}`}
+              onClick={() => setHeroTab("Obras Finalizadas")}
+            >
+              Obras Finalizadas
+            </button>
+          </div>
+
+          <button
+            type="button"
+            className={`btnIcon ${pinned ? "isPinned" : ""}`}
+            aria-label={pinned ? "Desafixar" : "Fixar"}
+            aria-pressed={pinned}
+            onClick={() => setPinned((v) => !v)}
+          >
+            📌
+          </button>
+        </div>
+
+        <Badge>ID {parada.paradaId}</Badge>
+
+        <h1 className="heroTitle">
+          A mobilização de {parada.embarcacao} termina no dia {parada.terminoRP}.
+        </h1>
+
+        <p className="heroSub">
+          Status: {parada.statusParada} • {parada.fel} • Início: {parada.inicioRP}
+        </p>
+
+      </div>
+      
+        {/* Navegação embaixo da imagem */}
+        <div className="paradaNav" role="group" aria-label="Navegação de paradas">
+          <button
+            type="button"
+            className="paradaNavBtn"
+            onClick={onPrevParada}
+            disabled={disableNav}
+            aria-label="Parada anterior"
+            title="Parada anterior"
+          >
+            ‹
+          </button>
+
+          <div className="paradaNavInfo">
+            <span className="paradaNavLabel">Parada</span>
+            <span className="paradaNavValue">ID {parada.paradaId}</span>
+            <span className="paradaNavHint">
+              {idx + 1} / {total}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            className="paradaNavBtn"
+            onClick={onNextParada}
+            disabled={disableNav}
+            aria-label="Próxima parada"
+            title="Próxima parada"
+          >
+            ›
+          </button>
+        </div>
+
+    </section>
+  );
+}

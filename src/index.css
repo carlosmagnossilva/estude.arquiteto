@@ -110,7 +110,6 @@ body{
   gap: 14px;
   min-width: 0; /* evita overflow em grid */
 }
-
 .tabsTop{
   display: flex;
   align-items: center;
@@ -123,14 +122,19 @@ body{
   flex-wrap: wrap;
 }
 
+/* desktop/tablet: flex com quebra */
 .tabs{
-  display: inline-flex;
+  display: flex;               /* trocado de inline-flex */
+  flex-wrap: wrap;             /* garante quebra */
   gap: 8px;
   background: #EFF5F8;
   padding: 6px;
   border-radius: 999px;
-  flex-wrap: wrap;
+  max-width: 100%;
 }
+
+/* permite encolher sem “estourar” a grid do .main */
+.tabsTop, .tabs{ min-width: 0; }
 
 .tab{
   border: 0;
@@ -141,14 +145,40 @@ body{
   cursor: pointer;
   font-weight: 600;
   font-size: clamp(12px, 1.2vw, 14px);
+
+  /* evita quebrar layout quando texto for grande */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tab.active{ background: var(--brand); color: #fff; }
 
+/* mobile: quebra em linhas (grid) */
+@media (max-width: 760px){
+  .tabsTop{
+    justify-content: flex-start; /* evita “espalhar” */
+  }
+
+  .tabs{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr; /* 1 por linha (4 tabs fica melhor) */
+    gap: 10px;
+    border-radius: 14px;        /* pílula gigante fica estranha no mobile */
+  }
+
+  .tab{
+    width: 100%;
+    text-align: center;
+  }
+}
+
+
 .btnIcon{
   border: 0;
   background: transparent;
-  font-size: clamp(22px, 1.2vw, 32px);
+  font-size: clamp(18px, 1.2vw, 22px);
   line-height: 1;
   display: inline-grid;
   place-items: center;
@@ -170,7 +200,7 @@ body{
   position: relative;
   border-radius: 14px;
   overflow: hidden;
-  min-height: clamp(300px, 46svh, 560px);
+  height: calc(100svh - (var(--pad) * 2));
   color: #fff;
   isolation: isolate;
 }
@@ -244,6 +274,75 @@ body{
   gap: 14px;
   width: 100%;
 }
+
+
+
+.paradaNav{
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(8, 18, 32, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.12);
+  z-index: 3; /* acima do overlay */
+}
+
+.paradaNavBtn{
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.paradaNavBtn:disabled{
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.paradaNavInfo{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: rgba(255,255,255,0.92);
+  min-width: 88px;
+}
+
+.paradaNavLabel{
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.paradaNavValue{
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .btnPrimary{
   width: fit-content;

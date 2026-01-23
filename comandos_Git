@@ -1,0 +1,15 @@
+# 1) entrar na pasta do projeto
+cd ~/estudearquiteto
+
+# 2) conferir o que mudou
+git status
+
+# 3) baixar o que está no GitHub e integrar no seu branch
+git pull --rebase origin main
+
+# 4) adicionar e commitar suas mudanças
+git add .
+git commit -m "Atualiza front (layout/hero/bff)"
+
+# 5) enviar para o GitHub
+git push origin main
