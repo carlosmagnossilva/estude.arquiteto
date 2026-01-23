@@ -114,28 +114,6 @@ function IconExit(props) {
   );
 }
 
-// Pin (enabled)
-function IconPinEnabled(props) {
-  return (
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" {...props}>
-      <path
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M14 3l7 7-3 3v3.5L13.5 21H10v-3.5L5.5 13H2.5l3-3 1-6h7.5z"
-      />
-      <path
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        d="M10 17.5l-6 6"
-      />
-    </svg>
-  );
-}
 
 function Badge({ children }) {
   return <span className="badge">{children}</span>;
