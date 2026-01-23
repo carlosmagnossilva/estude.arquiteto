@@ -155,11 +155,11 @@ export default function App() {
         </div>
 
         <nav className="menu">
-          <a className="menuItem active" href="#"><IconHome /> <span>Início</span></a>
-          <a className="menuItem" href="#"><IconMoney /> <span>Financeiro</span></a>
-          <a className="menuItem" href="#"><IconGrid /> <span>Obras</span></a>
-          <a className="menuItem" href="#"><IconDoc /> <span>GMUDs</span></a>
-          <a className="menuItem" href="#"><IconDoc /> <span>Relatórios</span></a>
+          <a className="menuItem active" href="/"><IconHome /> <span>Início</span></a>
+          <a className="menuItem" href="/financeiro"><IconMoney /> <span>Financeiro</span></a>
+          <a className="menuItem" href="/obras"><IconGrid /> <span>Obras</span></a>
+          <a className="menuItem" href="/gmuds"><IconDoc /> <span>GMUDs</span></a>
+          <a className="menuItem" href="/relatorios"><IconDoc /> <span>Relatórios</span></a>
 
           <div className="menuDivider" />
 
@@ -284,7 +284,7 @@ function HeroRotativo({ pinned, setPinned }) {
   const [heroTab, setHeroTab] = useState("Visão Geral");
   const [idx, setIdx] = useState(0);
 
-  const items = data?.items || [];
+  const items = useMemo(() => data?.items ?? [], [data?.items]);
 
   const elegiveis = useMemo(() => {
     if (heroTab === "Obras Futuras") {

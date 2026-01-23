@@ -13,3 +13,23 @@ git commit -m "Atualiza front (layout/hero/bff)"
 
 # 5) enviar para o GitHub
 git push origin main
+
+
+
+
+
+
+
+
+#GitHub recusando o push porque o branch remoto origin/main tem commits que você ainda não baixou (seu main local divergiu do remoto). Isso acontece muito quando alguém/algum processo fez commit direto no GitHub (ex.: workflow do Azure criado/alterado, edição pelo site, etc.).
+#Com working tree está limpo, o caminho mais seguro é rebase:
+#Atualize sua cópia do remoto
+git fetch origin
+
+#Rebase do seu commit em cima do origin/main
+
+git pull --rebase origin main
+
+#Depois faça o push
+
+git push origin main
