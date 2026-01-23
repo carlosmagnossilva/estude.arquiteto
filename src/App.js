@@ -163,14 +163,14 @@ export default function App() {
 
           <div className="menuDivider" />
 
-          <a className="menuItem" href="#"><IconBell /> <span>Atualizações</span> <span className="pill">4</span></a>
-          <a className="menuItem" href="#"><IconCheck /> <span>Pendências</span> <span className="pill">2</span></a>
-          <a className="menuItem" href="#"><IconGear /> <span>Painel de Controle</span></a>
+          <button className="menuItem" type="button"><IconBell /> <span>Atualizações</span> <span className="pill">4</span></button>
+          <button className="menuItem" type="button"><IconCheck /> <span>Pendências</span> <span className="pill">2</span></button>
+          <button className="menuItem" type="button"><IconGear /> <span>Painel de Controle</span></button>
 
           <div className="menuDivider" />
 
-          <a className="menuItem" href="#"><IconUser /> <span>Meu Perfil</span></a>
-          <a className="menuItem" href="#"><IconExit /> <span>Sair</span></a>
+          <button className="menuItem" type="button"><IconUser /> <span>Meu Perfil</span></button>
+          <button className="menuItem" type="button"><IconExit /> <span>Sair</span></button>
         </nav>
       </aside>
 
