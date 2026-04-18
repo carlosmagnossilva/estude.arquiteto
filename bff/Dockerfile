@@ -7,6 +7,8 @@ COPY package*.json ./
 COPY tsconfig.json ./
 
 # Copy workspaces configs
+COPY hub-consumer/package*.json ./hub-consumer/
+COPY hub-core/package*.json ./hub-core/
 COPY bff/package*.json ./bff/
 COPY shared-types/package*.json ./shared-types/
 
@@ -19,9 +21,7 @@ COPY shared-types ./shared-types
 
 # Build shared types first, then bff
 RUN npm run build --workspace=shared-types || true
-# Note: BFF might not have a build script yet if it's using tsx directly, 
-# but for production Docker we want to compile. 
-# If 'tsc' is in bff/package.json, this will work.
+RUN npm run build --workspace=bff
 
 # PRODUCTION STAGE
 FROM node:22-alpine AS runner

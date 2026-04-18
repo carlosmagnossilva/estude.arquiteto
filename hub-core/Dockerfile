@@ -8,6 +8,8 @@ COPY tsconfig.json ./
 
 # Copy workspaces configs
 COPY hub-core/package*.json ./hub-core/
+COPY bff/package*.json ./bff/
+COPY hub-consumer/package*.json ./hub-consumer/
 COPY shared-types/package*.json ./shared-types/
 
 # Install dependencies (including dev for build)
