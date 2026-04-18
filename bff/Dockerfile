@@ -33,11 +33,8 @@ ENV NODE_ENV=production
 COPY --from=base /app/package*.json ./
 COPY --from=base /app/bff/package*.json ./bff/
 COPY --from=base /app/shared-types/package*.json ./shared-types/
-# Assuming tsc builds to dist/
-COPY --from=base /app/bff/dist ./bff/dist || true
-# If the bff doesn't have a build script yet, we'll copy src and use tsx in prod 
-# (simpler for now as per current package.json)
-COPY --from=base /app/bff/src ./bff/src
+COPY --from=base /app/bff/dist ./bff/dist
+COPY --from=base /app/shared-types/dist ./shared-types/dist
 
 # Install only production dependencies
 RUN npm install --omit=dev --workspace=bff
