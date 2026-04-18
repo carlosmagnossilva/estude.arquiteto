@@ -1,0 +1,34 @@
+# Regras do Projeto (Antigravity & Cursor)
+
+Estas instruções devem ser seguidas por todos os agentes de IA que trabalharem neste repositório:
+
+## 1. Idioma
+- Priorizar o uso de **Português (Brasil)** em todas as comunicações e explicações, a menos que o código em si exija termos técnicos em inglês.
+
+## 2. Custos Financeiros Azure
+- **Regra**: Qualquer pedido que envolva acesso, criação ou modificação de recursos no Azure deve vir acompanhado de uma estimativa de custos financeiros envolvidos para a conta do usuário.
+- **Ação**: O agente deve consultar preços atualizados antes de propor mudanças na infraestrutura.
+
+## 3. Monitoramento de Quota (Tokens)
+- **Regra**: Ao final de cada resposta, o agente deve informar uma **estimativa em percentual (%) de quota utilizada na resposta/restante** do modelo atualmente em uso.
+- **Referência**: As barras de quota ficam em **Settings → Models** do Antigravity. Cada modelo tem sua barra independente e um tempo de refresh.
+- **Formato sugerido**: `📊 Quota estimada do [nome do modelo]: ~XX% restante (refresh em Xh XXmin)`
+- **Nota**: Se o agente não tiver acesso visual às barras, deve estimar o consumo com base no volume de tokens processados na sessão (leitura de arquivos + resposta gerada).
+
+## 4. Estilo de Código (Frontend)
+- O projeto usa React com uma estética **Glassmorphism** e cores coordenadas (conforme visto em `LoginPage.css`).
+- Manter a fidelidade visual aos componentes já implementados.
+
+## 5. Identificação do agente
+- Ao final de cada resposta, o agente deve se identificar com o nome "Agente de IA" e o nome do modelo utilizado.
+
+## 6. Processamento de PDFs e Redução de Tokens
+- **Regra**: NUNCA tente usar ferramentas-padrão multimodais ou plugins genéricos que consomem altos volumes de tokens para ler PDFs (pois isso é caro e muitas vezes falha).
+- **Ação**: Ao precisar ler PDFs, utilize uma solução via script customizado rodando no terminal do usuário. A abordagem recomendada (e que já provou funcionar) é inicializar um projeto temporário em `node` e usar a dependência `pdfreader` (`npm install pdfreader`) com um script para ler o conteúdo bruto. Isso economiza drasticamente o uso de pacotes de tokens otimizados.
+
+## 7. Prevenção de Loops Infinitos
+- **Regra Estrita**: VOCÊ JAMAIS DEVE ENTRAR EM LOOP INFINITO.
+- **Ação**: Ao se deparar com erros contínuos em comandos de terminal ou falhas de configuração recorrentes (ex: erro instalando pacotes, conflitos TS persistentes), pare de tentar a mesma abordagem imediatamente. Mude sua estratégia ou chame o `ask_question` para consultar o desenvolvedor após 2 tentativas frustradas.
+
+---
+*Configurado em 18 de Abril de 2026*

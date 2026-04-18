@@ -1,0 +1,23 @@
+{
+  "name": "hub-consumer",
+  "version": "1.0.0",
+  "description": "Background Consumer for Azure Service Bus - Hub de Obras",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon --exec tsx src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@azure/service-bus": "^7.9.5",
+    "dotenv": "^17.2.3",
+    "@hub/types": "*"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11",
+    "typescript": "^5.4.5",
+    "tsx": "^4.10.1",
+    "@types/node": "^20.0.0"
+  }
+}

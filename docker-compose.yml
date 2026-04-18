@@ -1,0 +1,32 @@
+services:
+  hub-core:
+    build:
+      context: .
+      dockerfile: hub-core/Dockerfile
+    ports:
+      - "5001:5001"
+    env_file: .env
+    environment:
+      - PORT=5001
+
+  bff:
+    build:
+      context: .
+      dockerfile: bff/Dockerfile
+    ports:
+      - "4000:4000"
+    env_file: .env
+    environment:
+      - PORT_BFF=4000
+      - CORE_SERVICE_URL=http://hub-core:5001
+      - SB_CONSUMER_ENABLED=false
+    depends_on:
+      - hub-core
+
+  hub-consumer:
+    build:
+      context: .
+      dockerfile: hub-consumer/Dockerfile
+    env_file: .env
+    depends_on:
+      - bff

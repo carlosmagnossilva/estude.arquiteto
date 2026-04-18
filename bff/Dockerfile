@@ -1,0 +1,47 @@
+# BASE STAGE
+FROM node:22-alpine AS base
+WORKDIR /app
+
+# Copy root configs
+COPY package*.json ./
+COPY tsconfig.json ./
+
+# Copy workspaces configs
+COPY bff/package*.json ./bff/
+COPY shared-types/package*.json ./shared-types/
+
+# Install dependencies
+RUN npm install
+
+# Copy source code
+COPY bff ./bff
+COPY shared-types ./shared-types
+
+# Build shared types first, then bff
+RUN npm run build --workspace=shared-types || true
+# Note: BFF might not have a build script yet if it's using tsx directly, 
+# but for production Docker we want to compile. 
+# If 'tsc' is in bff/package.json, this will work.
+
+# PRODUCTION STAGE
+FROM node:22-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Copy built files and production node_modules from base
+COPY --from=base /app/package*.json ./
+COPY --from=base /app/bff/package*.json ./bff/
+COPY --from=base /app/shared-types/package*.json ./shared-types/
+# Assuming tsc builds to dist/
+COPY --from=base /app/bff/dist ./bff/dist || true
+# If the bff doesn't have a build script yet, we'll copy src and use tsx in prod 
+# (simpler for now as per current package.json)
+COPY --from=base /app/bff/src ./bff/src
+
+# Install only production dependencies
+RUN npm install --omit=dev --workspace=bff
+
+EXPOSE 4000
+
+CMD ["npm", "start", "--workspace=bff"]
