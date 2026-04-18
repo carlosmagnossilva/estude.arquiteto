@@ -55,36 +55,32 @@ jobs:
 
       - name: Deploy Hub Core
         run: |
-          az containerapp up \
+          az containerapp create \
             --name hub-core-app \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --environment ${{ env.ACA_ENV }} \
             --image ${{ env.ACR_NAME }}.azurecr.io/hub-core:latest \
             --target-port 5001 \
-            --ingress internal \
-            --query-status
+            --ingress internal
 
       - name: Deploy BFF
         run: |
-          az containerapp up \
+          az containerapp create \
             --name hub-bff-app \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --environment ${{ env.ACA_ENV }} \
             --image ${{ env.ACR_NAME }}.azurecr.io/bff:latest \
             --target-port 4000 \
-            --ingress external \
-            --query-status
+            --ingress external
 
       - name: Deploy Hub Consumer
         run: |
-          az containerapp up \
+          az containerapp create \
             --name hub-consumer-app \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --environment ${{ env.ACA_ENV }} \
             --image ${{ env.ACR_NAME }}.azurecr.io/hub-consumer:latest \
-            --ingress internal \
-            --scale-min-replicas 0 \
-            --query-status
+            --ingress internal
 
   deploy-frontend:
     runs-on: ubuntu-latest
@@ -92,6 +88,16 @@ jobs:
       - name: Checkout path
         uses: actions/checkout@v4
       
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          
+      - name: Build Shared Types
+        run: |
+          npm install
+          npm run build --workspace=shared-types
+          
       - name: Build And Deploy Frontend
         uses: Azure/static-web-apps-deploy@v1
         with:
