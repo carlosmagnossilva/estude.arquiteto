@@ -55,32 +55,24 @@ jobs:
 
       - name: Deploy Hub Core
         run: |
-          az containerapp create \
+          az containerapp update \
             --name hub-core-app \
             --resource-group ${{ env.RESOURCE_GROUP }} \
-            --environment ${{ env.ACA_ENV }} \
-            --image ${{ env.ACR_NAME }}.azurecr.io/hub-core:latest \
-            --target-port 5001 \
-            --ingress internal
+            --image ${{ env.ACR_NAME }}.azurecr.io/hub-core:latest
 
       - name: Deploy BFF
         run: |
-          az containerapp create \
+          az containerapp update \
             --name hub-bff-app \
             --resource-group ${{ env.RESOURCE_GROUP }} \
-            --environment ${{ env.ACA_ENV }} \
-            --image ${{ env.ACR_NAME }}.azurecr.io/bff:latest \
-            --target-port 4000 \
-            --ingress external
+            --image ${{ env.ACR_NAME }}.azurecr.io/bff:latest
 
       - name: Deploy Hub Consumer
         run: |
-          az containerapp create \
+          az containerapp update \
             --name hub-consumer-app \
             --resource-group ${{ env.RESOURCE_GROUP }} \
-            --environment ${{ env.ACA_ENV }} \
-            --image ${{ env.ACR_NAME }}.azurecr.io/hub-consumer:latest \
-            --ingress internal
+            --image ${{ env.ACR_NAME }}.azurecr.io/hub-consumer:latest
 
   deploy-frontend:
     runs-on: ubuntu-latest
@@ -93,10 +85,10 @@ jobs:
         with:
           node-version: '22'
           
-      - name: Build Shared Types
+      - name: Build Frontend
         run: |
           npm install
-          npm run build --workspace=shared-types
+          npm run build
           
       - name: Build And Deploy Frontend
         uses: Azure/static-web-apps-deploy@v1
@@ -107,3 +99,4 @@ jobs:
           app_location: "/" 
           api_location: "" 
           output_location: "build"
+          skip_app_build: true
